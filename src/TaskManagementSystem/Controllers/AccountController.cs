@@ -54,8 +54,16 @@
             return BadRequest("Invalid Creadentials");
         }
 
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            this.Response.Cookies.Delete("jwt");
+
+            return Ok();
+        }
+
         [HttpGet("user")]
-        public async Task<IActionResult> User()
+        public async Task<IActionResult> ApplicationUser()
         {
             try
             {
