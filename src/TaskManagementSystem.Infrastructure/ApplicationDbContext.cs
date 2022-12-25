@@ -21,6 +21,10 @@
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<UserTask>()
+                .Property(x => x.IsFinished)
+                .HasDefaultValue(false);
+
             base.OnModelCreating(modelBuilder);
         }
     }

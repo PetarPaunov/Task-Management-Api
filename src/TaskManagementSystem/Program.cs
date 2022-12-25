@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using TaskManagementSystem.Core.Contracts.Account;
 using TaskManagementSystem.Core.Contracts.User;
+using TaskManagementSystem.Core.Contracts.UserTask;
 using TaskManagementSystem.Core.Services.Account;
 using TaskManagementSystem.Core.Services.User;
+using TaskManagementSystem.Core.Services.UserTask;
 using TaskManagementSystem.Infrastructure;
 using TaskManagementSystem.Infrastructure.Common;
 
@@ -24,6 +26,7 @@ builder.Services.AddScoped<IRepository, Repository>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ITaskService, TaskService>();
 
 var app = builder.Build();
 

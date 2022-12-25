@@ -29,5 +29,7 @@
 
         [ForeignKey(nameof(ApplicationUserId))]
         public ApplicationUser ApplicationUser { get; set; } = null!;
+
+        public bool IsFinished { get; set; }
     }
 }
