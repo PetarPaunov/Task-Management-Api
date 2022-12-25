@@ -12,6 +12,7 @@
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+        public DbSet<UserTask> Tasks { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
