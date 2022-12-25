@@ -1,11 +1,10 @@
 ﻿namespace TaskManagementSystem.Controllers
 {
-    using TaskManagementSystem.Core.Contracts.Account;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using TaskManagementSystem.Core.Models.AccountModels;
+    using TaskManagementSystem.Core.Contracts.Account;
     using TaskManagementSystem.Core.Contracts.User;
-    using System.Security.Claims;
+    using TaskManagementSystem.Core.Models.AccountModels;
 
     [Route("api/[controller]")]
     [ApiController]
@@ -39,7 +38,12 @@
         [HttpPost("login")]
         public async Task<IActionResult> Login(ApplicationUserLoginModel request)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
             {
                 var jwt = await service.LoginUserAsync(request);
 
@@ -48,10 +52,18 @@
                     HttpOnly = true
                 });
 
-                return Ok("Success");
+                return Ok(new
+                {
+                    message = "Success"
+                });
             }
-
-            return BadRequest("Invalid Creadentials");
+            catch (Exception e)
+            {
+                return BadRequest(new
+                {
+                    message = e.Message
+                });
+            }
         }
 
         [HttpPost("logout")]
