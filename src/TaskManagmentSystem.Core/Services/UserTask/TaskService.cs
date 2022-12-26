@@ -45,9 +45,20 @@
             await this.repository.SaveChangesAsync();
         }
 
-        public Task FinishTaskAsync(Guid id)
+        public async Task FinishTaskAsync(Guid taskId, Guid userId)
         {
-            throw new NotImplementedException();
+            var task = await this.repository.All<UserTask>()
+                .Where(x => x.Id == taskId && x.ApplicationUserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (task == null)
+            {
+                throw new ArgumentException("The user or task is invalid!");
+            }
+
+            task.IsFinished = true;
+
+            await this.repository.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<GetTaskModel>> GetTaskAsync(Guid userId)

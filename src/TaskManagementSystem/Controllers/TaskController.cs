@@ -142,5 +142,26 @@
                 });
             };
         }
+
+        [HttpPost("finish")]
+        public async Task<IActionResult> Finish(string taskId)
+        {
+            try
+            {
+                var jwt = this.Request.Cookies["jwt"];
+                var token = this.jwtService.ValidateJwtToke(jwt);
+
+                var userId = Guid.Parse(token.Issuer);
+                var taskGuid = Guid.Parse(taskId);
+
+                await this.taskService.FinishTaskAsync(taskGuid, userId);
+
+                return Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                return Unauthorized();
+            }
+        }
     }
 }

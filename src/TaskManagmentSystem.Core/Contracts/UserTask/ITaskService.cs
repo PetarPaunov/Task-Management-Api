@@ -9,6 +9,6 @@
         Task UpdateTaskAsync(UpdateTaskModel request);
         Task<GetTaskForUpdateModel> GetForUpdateAsync(Guid taskId, Guid userId);
         Task MoveTaskAsync(Guid taskId, Guid userId, bool hasToPromote);
-        Task FinishTaskAsync(Guid id);
+        Task FinishTaskAsync(Guid taskId, Guid userId);
     }
 }
