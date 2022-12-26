@@ -1,7 +1,5 @@
 ﻿namespace TaskManagementSystem.Core.Models.UserTaskModels
 {
-    using TaskManagementSystem.Infrastructure.Emuns;
-
     public class GetTaskModel
     {
         public Guid Id { get; set; }
@@ -10,8 +8,8 @@
 
         public string Description { get; set; } = null!;
 
-        public State State { get; set; }
+        public string State { get; set; } = null!;
 
-        public Importance Importance { get; set; }
+        public string Importance { get; set; } = null!;
     }
 }

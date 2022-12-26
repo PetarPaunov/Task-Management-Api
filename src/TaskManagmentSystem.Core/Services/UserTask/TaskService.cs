@@ -54,22 +54,80 @@
         {
             var tasks = await repository.AllReadonly<UserTask>()
                 .Where(x => x.ApplicationUserId == userId)
-                .Select(x => new GetTaskModel()
-                {
-                    Id = x.Id,
-                    Title = x.Title,
-                    Description = x.Description,
-                    State = x.State,
-                    Importance = x.Importance
-                })
                 .ToListAsync();
 
-            return tasks;
+            var tasksList = new List<GetTaskModel>();
+
+            foreach (var task in tasks)
+            {
+                var importance = task.Importance.ToString();
+                var state = task.State.ToString();
+
+                tasksList.Add(new GetTaskModel()
+                {
+                    Id = task.Id,
+                    Title = task.Title,
+                    Description = task.Description,
+                    Importance = importance,
+                    State = state
+                });
+            }
+
+            return tasksList;
         }
 
         public Task MoveTaskAsync(Guid id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task UpdateTaskAsync(UpdateTaskModel request)
+        {
+            var taskId = Guid.Parse(request.Id);
+
+            var task = await this.repository.GetByIdAsync<UserTask>(taskId);
+
+            var importanceIsValid = Enum.TryParse<Importance>(request.Importance, out var importanceType);
+
+            if (!importanceIsValid)
+            {
+                throw new ArgumentException("Importance type is not valid!");
+            }
+
+            var stateIsValid = Enum.TryParse<State>(request.State, out var stateType);
+
+            if (!stateIsValid)
+            {
+                throw new ArgumentException("State type is not valid!");
+            }
+
+            task.Title = request.Title;
+            task.Description = request.Description;
+            task.Importance = importanceType;
+            task.State = stateType;
+
+            await this.repository.SaveChangesAsync();
+        }
+
+        public async Task<GetTaskForUpdateModel> GetForUpdateAsync(Guid taskId, Guid userId)
+        {
+            var task = await this.repository.AllReadonly<UserTask>()
+                .Where(x => x.Id == taskId && x.ApplicationUserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (task == null)
+            {
+                throw new ArgumentException("The user or task is invalid!");
+            }
+
+            return new GetTaskForUpdateModel()
+            {
+                Id = task.Id.ToString(),
+                Title = task.Title,
+                Description = task.Description,
+                Importance = task.Importance,
+                State = task.State
+            };
         }
     }
 }

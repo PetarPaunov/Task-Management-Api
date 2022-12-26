@@ -1,7 +1,5 @@
 ﻿namespace TaskManagementSystem.Controllers
 {
-    using Azure.Core;
-    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TaskManagementSystem.Core.Contracts.Account;
     using TaskManagementSystem.Core.Contracts.UserTask;
@@ -69,6 +67,51 @@
             catch (ArgumentNullException)
             {
                 return Unauthorized();
+            };
+        }
+
+        [HttpGet("get-for-update")]
+        public async Task<IActionResult> GetForUpdate(string taskId)
+        {
+            try
+            {
+                var jwt = this.Request.Cookies["jwt"];
+                var token = this.jwtService.ValidateJwtToke(jwt);
+
+                var userId = Guid.Parse(token.Issuer);
+                var taskGuid = Guid.Parse(taskId);
+
+                var task = await this.taskService.GetForUpdateAsync(taskGuid, userId);
+
+                return Ok(task);
+            }
+            catch (ArgumentNullException)
+            {
+                return Unauthorized();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new
+                {
+                    message = e.Message,
+                });
+            };
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> Update(UpdateTaskModel request)
+        {
+            try
+            {
+                await this.taskService.UpdateTaskAsync(request);
+                return Ok();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new
+                {
+                    message = e.Message,
+                });
             };
         }
     }
