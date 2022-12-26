@@ -76,9 +76,41 @@
             return tasksList;
         }
 
-        public Task MoveTaskAsync(Guid id)
+        public async Task MoveTaskAsync(Guid taskId, Guid userId, bool hasToPromote)
         {
-            throw new NotImplementedException();
+            var task = await this.repository.All<UserTask>()
+                .Where(x => x.Id == taskId && x.ApplicationUserId == userId)
+                .FirstOrDefaultAsync();
+
+            if (task == null)
+            {
+                throw new ArgumentException("The user or task is invalid!");
+            }
+
+            if (hasToPromote)
+            {
+                if ((int)task.State == 10)
+                {
+                    task.State = State.InProgress;
+                }
+                else if ((int)task.State == 20)
+                {
+                    task.State = State.Finished;
+                }
+            }
+            else
+            {
+                if ((int)task.State == 30)
+                {
+                    task.State = State.InProgress;
+                }
+                else if ((int)task.State == 20)
+                {
+                    task.State = State.Todo;
+                }
+            }
+
+            await repository.SaveChangesAsync();
         }
 
         public async Task UpdateTaskAsync(UpdateTaskModel request)

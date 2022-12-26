@@ -114,5 +114,33 @@
                 });
             };
         }
+
+        [HttpPost("move")]
+        public async Task<IActionResult> Move(string taskId, bool hasToPromote)
+        {
+            try
+            {
+                var jwt = this.Request.Cookies["jwt"];
+                var token = this.jwtService.ValidateJwtToke(jwt);
+
+                var userId = Guid.Parse(token.Issuer);
+                var taskGuid = Guid.Parse(taskId);
+
+                await this.taskService.MoveTaskAsync(taskGuid, userId, hasToPromote);
+
+                return Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                return Unauthorized();
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(new
+                {
+                    message = e.Message,
+                });
+            };
+        }
     }
 }
