@@ -1,5 +1,6 @@
 ﻿namespace TaskManagementSystem.Core.Services.UserTask
 {
+    using Microsoft.EntityFrameworkCore;
     using TaskManagementSystem.Core.Contracts.UserTask;
     using TaskManagementSystem.Core.Models.UserTaskModels;
     using TaskManagementSystem.Infrastructure.Common;
@@ -47,6 +48,23 @@
         public Task FinishTaskAsync(Guid id)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<GetTaskModel>> GetTaskAsync(Guid userId)
+        {
+            var tasks = await repository.AllReadonly<UserTask>()
+                .Where(x => x.ApplicationUserId == userId)
+                .Select(x => new GetTaskModel()
+                {
+                    Id = x.Id,
+                    Title = x.Title,
+                    Description = x.Description,
+                    State = x.State,
+                    Importance = x.Importance
+                })
+                .ToListAsync();
+
+            return tasks;
         }
 
         public Task MoveTaskAsync(Guid id)

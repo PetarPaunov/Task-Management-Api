@@ -1,5 +1,6 @@
 ﻿namespace TaskManagementSystem.Controllers
 {
+    using Azure.Core;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using TaskManagementSystem.Core.Contracts.Account;
@@ -49,6 +50,26 @@
                     message = e.Message,
                 });
             }
+        }
+
+        [HttpGet("get")]
+        public async Task<IActionResult> Get()
+        {
+            try
+            {
+                var jwt = this.Request.Cookies["jwt"];
+                var token = this.jwtService.ValidateJwtToke(jwt);
+
+                var userId = Guid.Parse(token.Issuer);
+
+                var tasks = await this.taskService.GetTaskAsync(userId);
+
+                return Ok(tasks);
+            }
+            catch (ArgumentNullException)
+            {
+                return Unauthorized();
+            };
         }
     }
 }
